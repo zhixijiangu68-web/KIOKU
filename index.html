@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#080a12">
+<title>KIOKU</title>
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+  color:#fff;background:#080a12
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+
+.background{
+  position:fixed;inset:0;z-index:-3;
+  background:
+    radial-gradient(circle at 75% 5%,rgba(100,80,180,.20),transparent 30%),
+    radial-gradient(circle at 10% 80%,rgba(40,80,150,.18),transparent 35%),
+    linear-gradient(160deg,#05060c,#0b1020 50%,#161126 100%);
+  background-size:cover;background-position:center
+}
+.background-overlay{
+  position:fixed;inset:0;z-index:-2;
+  background:rgba(4,6,15,.58);pointer-events:none
+}
+.ambient{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(255,255,255,.04),transparent 25%),
+    radial-gradient(circle at 85% 65%,rgba(130,100,220,.08),transparent 30%)
+}
+
+.app-page{display:none}
+.app-page.active{display:block}
+.container{
+  width:min(100%,650px);margin:auto;
+  padding:calc(18px + env(safe-area-inset-top)) 18px calc(115px + env(safe-area-inset-bottom))
+}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.logo{
+  font-size:26px;font-weight:900;letter-spacing:.16em;
+  background:linear-gradient(120deg,#fff,#d9d2ff,#fff);
+  -webkit-background-clip:text;background-clip:text;color:transparent
+}
+.page-heading{padding:24px 2px 8px}
+.page-heading h1{margin:0;font-size:29px}
+.page-heading p{margin:8px 0 0;color:rgba(255,255,255,.43);font-size:12px;line-height:1.7}
+.hero{padding:36px 3px 25px}
+.hero h1{margin:0;font-size:30px}
+.hero p{margin:9px 0 0;color:rgba(255,255,255,.45);font-size:13px}
+.glass{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(7,9,19,.68);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
+}
+.section-title{
+  display:flex;align-items:center;gap:12px;margin:29px 2px 14px;
+  color:rgba(255,255,255,.72);font-size:14px;font-weight:700
+}
+.section-title:after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(to right,rgba(255,255,255,.14),transparent)
+}
+
+/* dashboard */
+.dashboard{padding:22px;border-radius:23px}
+.dashboard-top{display:flex;align-items:center;gap:22px}
+.ring{
+  position:relative;width:112px;height:112px;flex-shrink:0;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:conic-gradient(#9278dd 0deg,rgba(255,255,255,.08) 0deg);
+  box-shadow:0 0 35px rgba(120,90,200,.12)
+}
+.ring:before{
+  content:"";position:absolute;width:87px;height:87px;border-radius:50%;
+  background:rgba(10,12,23,.96)
+}
+.ring-content{position:relative;text-align:center}
+.ring-percent{font-size:24px;font-weight:850}
+.ring-label{margin-top:2px;color:rgba(255,255,255,.38);font-size:9px}
+.dashboard-heading{font-size:18px;font-weight:800}
+.dashboard-sub{margin-top:7px;color:rgba(255,255,255,.4);font-size:11px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.stat{padding:13px 5px;border-radius:13px;text-align:center;background:rgba(255,255,255,.035)}
+.stat-number{font-size:20px;font-weight:850}
+.stat-label{margin-top:5px;color:rgba(255,255,255,.38);font-size:9px}
+
+/* quick */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick-card{padding:18px;border-radius:18px;cursor:pointer}
+.quick-icon{font-size:24px}
+.quick-title{margin-top:13px;font-size:14px;font-weight:800}
+.quick-text{margin-top:5px;color:rgba(255,255,255,.38);font-size:10px;line-height:1.5}
+
+/* search */
+.search-row{display:flex;gap:8px}
+.search-input{
+  flex:1;min-width:0;width:100%;padding:15px 16px;
+  border:1px solid rgba(255,255,255,.09);border-radius:14px;outline:0;
+  color:#fff;background:rgba(5,7,16,.62);font-size:16px
+}
+.search-button{
+  padding:0 19px;border:0;border-radius:14px;color:#fff;
+  background:linear-gradient(135deg,#7659b3,#5366a7);font-weight:750
+}
+.results{margin-top:14px}
+.search-card{display:flex;gap:13px;padding:13px;margin-bottom:10px;border-radius:17px}
+.poster{width:82px;height:115px;flex-shrink:0;object-fit:cover;border-radius:11px;background:rgba(255,255,255,.05)}
+.search-info{flex:1;min-width:0}
+.search-title{font-size:14px;font-weight:750;line-height:1.45}
+.search-meta{margin:7px 0 12px;color:rgba(255,255,255,.42);font-size:11px;line-height:1.6}
+.small-button{
+  padding:8px 11px;border:1px solid rgba(160,140,230,.25);
+  border-radius:9px;color:#ddd2ff;background:rgba(130,100,200,.12)
+}
+
+/* library */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter{
+  flex-shrink:0;padding:9px 14px;border:1px solid rgba(255,255,255,.08);
+  border-radius:100px;color:rgba(255,255,255,.48);background:rgba(255,255,255,.035)
+}
+.filter.active{color:#fff;border-color:rgba(160,140,230,.3);background:rgba(130,100,200,.17)}
+.library-card{display:flex;align-items:center;gap:13px;padding:13px;margin-bottom:10px;border-radius:18px;cursor:pointer}
+.library-poster{width:65px;height:91px;flex-shrink:0;object-fit:cover;border-radius:10px;background:rgba(255,255,255,.05)}
+.library-info{flex:1;min-width:0}
+.library-title{font-size:15px;font-weight:750;line-height:1.4}
+.library-meta{margin-top:6px;color:rgba(255,255,255,.42);font-size:11px;line-height:1.5}
+.progress{height:6px;margin-top:10px;overflow:hidden;border-radius:10px;background:rgba(255,255,255,.08)}
+.progress-bar{height:100%;border-radius:10px;background:linear-gradient(90deg,#7658ae,#8393db)}
+.library-percent{margin-top:6px;color:#cfc5ff;font-size:11px}
+.complete-label{color:#c8baff}
+.arrow{color:rgba(255,255,255,.3);font-size:24px}
+.empty{padding:30px 15px;text-align:center;color:rgba(255,255,255,.38);font-size:12px;line-height:1.8}
+
+/* discover */
+.discover-hero{padding:22px;border-radius:22px}
+.discover-symbol{font-size:31px}
+.discover-title{margin-top:15px;font-size:21px;font-weight:850}
+.discover-text{margin-top:8px;color:rgba(255,255,255,.43);font-size:12px;line-height:1.75}
+.primary-button{
+  width:100%;margin-top:18px;padding:14px;border:0;border-radius:13px;
+  color:#fff;font-weight:750;background:linear-gradient(135deg,#7659b3,#5366a7)
+}
+
+/* profile */
+.profile-card{padding:22px;border-radius:22px}
+.profile-title{font-size:18px;font-weight:800}
+.profile-description{margin-top:7px;color:rgba(255,255,255,.4);font-size:11px}
+.insight-card{padding:17px;border-radius:17px;margin-bottom:10px}
+.insight-label{color:rgba(255,255,255,.38);font-size:10px}
+.insight-value{margin-top:6px;font-size:16px;font-weight:750}
+.trend-summary{padding:20px;border-radius:20px}
+.trend-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.trend-head-title{font-size:17px;font-weight:800}
+.trend-head-text{margin-top:6px;color:rgba(255,255,255,.4);font-size:10px;line-height:1.6}
+.trend-level{
+  flex-shrink:0;padding:7px 10px;border:1px solid rgba(160,140,230,.18);
+  border-radius:100px;color:#d8ceff;background:rgba(130,100,200,.1);font-size:9px
+}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
+.trend-stat{padding:15px;border-radius:15px;background:rgba(255,255,255,.035)}
+.trend-stat-number{font-size:23px;font-weight:850}
+.trend-stat-label{margin-top:5px;color:rgba(255,255,255,.35);font-size:9px}
+.trend-card{position:relative;overflow:hidden;padding:18px;margin-bottom:10px;border-radius:18px}
+.trend-icon{font-size:19px}
+.trend-card-label{margin-top:10px;color:rgba(255,255,255,.36);font-size:9px}
+.trend-card-value{margin-top:5px;font-size:17px;font-weight:800;line-height:1.5}
+.trend-card-sub{margin-top:6px;color:rgba(255,255,255,.38);font-size:10px;line-height:1.6}
+.trend-bar{height:6px;margin-top:13px;overflow:hidden;border-radius:100px;background:rgba(255,255,255,.06)}
+.trend-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#7658ae,#9a8ae0)}
+.analysis-progress{margin-top:13px;padding:13px;border-radius:14px;background:rgba(255,255,255,.03)}
+.analysis-progress-top{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.4);font-size:9px}
+.personality-card{padding:22px;border-radius:20px;text-align:center}
+.personality-symbol{font-size:29px}
+.personality-small{margin-top:11px;color:rgba(255,255,255,.38);font-size:9px;letter-spacing:.08em}
+.personality-title{margin-top:7px;font-size:21px;font-weight:850}
+.personality-text{margin:9px auto 0;max-width:330px;color:rgba(255,255,255,.43);font-size:11px;line-height:1.8}
+.setting-link{
+  display:flex;align-items:center;justify-content:space-between;width:100%;
+  margin-top:14px;padding:16px;border:1px solid rgba(255,255,255,.08);
+  border-radius:15px;color:#fff;text-align:left;background:rgba(255,255,255,.04)
+}
+
+/* viewing stats */
+.period-card{padding:20px;border-radius:20px;margin-top:10px}
+.period-label{font-size:11px;color:rgba(255,255,255,.4)}
+.period-main{margin-top:7px;font-size:27px;font-weight:900}
+.period-sub{margin-top:6px;color:rgba(255,255,255,.4);font-size:11px}
+
+/* detail */
+#detailPage{display:none}
+.back{padding:9px 0;border:0;color:rgba(255,255,255,.7);background:transparent}
+.detail-header{display:flex;gap:16px;margin-top:20px}
+.detail-poster{width:110px;height:158px;object-fit:cover;border-radius:14px}
+.detail-info{flex:1}
+.detail-title{margin:4px 0 8px;font-size:21px;line-height:1.4}
+.detail-meta{color:rgba(255,255,255,.43);font-size:12px;line-height:1.6}
+.big-percent{margin-top:14px;font-size:29px;font-weight:900}
+.date-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:17px}
+.date-box{padding:10px 4px;border-radius:11px;background:rgba(255,255,255,.035);text-align:center}
+.date-label{color:rgba(255,255,255,.35);font-size:9px}
+.date-value{margin-top:5px;font-size:10px}
+.panel{margin-top:17px;padding:17px;border-radius:18px}
+.panel-title{margin-bottom:13px;font-size:14px;font-weight:750}
+.all-watched-button{
+  width:100%;margin-top:16px;padding:14px;border:1px solid rgba(160,140,230,.25);
+  border-radius:13px;color:#e1d8ff;background:rgba(130,100,200,.13);font-weight:750
+}
+.all-watched-button.done{opacity:.6}
+.episode-row{padding:13px 2px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
+.episode-row:last-child{border-bottom:0}
+.episode-main{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5}
+.episode-check{width:19px;flex-shrink:0;color:#cfc5ff}
+.episode-date,.episode-note{margin:5px 0 0 27px;font-size:10px}
+.episode-date{color:rgba(255,255,255,.3)}
+.episode-note{color:#c9bdf8}
+
+.theme-group{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.theme-group:last-child{border-bottom:0}
+.theme-type{font-size:10px;color:#cfc5ff;font-weight:800;letter-spacing:.08em}
+.theme-song{margin-top:7px;font-size:13px;line-height:1.7}
+
+.cast-row{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.cast-image{width:45px;height:58px;object-fit:cover;border-radius:8px;background:rgba(255,255,255,.05)}
+.cast-name{font-size:13px;font-weight:700}
+.cast-cv{margin-top:5px;color:rgba(255,255,255,.42);font-size:11px}
+.danger-button{
+  width:100%;padding:13px;border:1px solid rgba(255,100,120,.2);
+  border-radius:12px;color:#ffadb8;background:rgba(180,50,70,.07)
+}
+
+/* bottom nav */
+.bottom-nav-wrap{
+  position:fixed;z-index:40;left:0;right:0;bottom:0;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));pointer-events:none
+}
+.bottom-nav{
+  width:min(100%,620px);margin:auto;display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid rgba(255,255,255,.09);border-radius:24px;overflow:hidden;
+  background:rgba(9,10,20,.80);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  box-shadow:0 10px 40px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.04);
+  pointer-events:auto
+}
+.nav-item{
+  position:relative;min-height:65px;padding:9px 3px 7px;border:0;
+  color:rgba(255,255,255,.35);background:transparent
+}
+.nav-icon{display:block;height:25px;font-size:20px;line-height:25px;transition:.2s}
+.nav-label{display:block;margin-top:3px;font-size:9px;font-weight:650}
+.nav-item.active{color:#d8cdff}
+.nav-item.active .nav-icon{transform:translateY(-1px);text-shadow:0 0 18px rgba(170,140,255,.8)}
+.nav-item.active:after{
+  content:"";position:absolute;bottom:3px;left:50%;width:4px;height:4px;border-radius:50%;
+  transform:translateX(-50%);background:#a58de5;box-shadow:0 0 10px #a58de5
+}
+
+/* modal */
+.modal{
+  position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;
+  justify-content:center;background:rgba(0,0,0,.66)
+}
+.modal.show{display:flex}
+.sheet{
+  width:min(100%,650px);max-height:90vh;overflow-y:auto;
+  padding:24px 19px calc(35px + env(safe-area-inset-bottom));
+  border-radius:26px 26px 0 0;
+  background:linear-gradient(160deg,#16182b,#090b14);
+  box-shadow:0 -20px 60px rgba(0,0,0,.4)
+}
+.sheet-header{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.sheet-title{font-size:19px;font-weight:800;line-height:1.5}
+.close{
+  width:35px;height:35px;flex-shrink:0;border:0;border-radius:50%;
+  color:#fff;background:rgba(255,255,255,.07)
+}
+.watch-toggle{
+  width:100%;margin-top:20px;padding:13px;border:1px solid rgba(140,120,220,.25);
+  border-radius:12px;color:#ddd2ff;background:rgba(120,90,190,.1)
+}
+.text-label{display:block;margin:22px 0 8px;color:rgba(255,255,255,.6);font-size:12px}
+.note-input{
+  width:100%;min-height:135px;resize:vertical;padding:14px;
+  border:1px solid rgba(255,255,255,.09);border-radius:13px;outline:0;
+  color:#fff;background:rgba(255,255,255,.04);line-height:1.7
+}
+.save-button{
+  width:100%;margin-top:14px;padding:13px;border:0;border-radius:12px;
+  color:#fff;background:linear-gradient(135deg,#7257ae,#5262a1);font-weight:700
+}
+
+/* quiz */
+.quiz-progress{margin-top:7px;color:rgba(255,255,255,.35);font-size:11px}
+.quiz-question{margin-top:22px;font-size:21px;font-weight:800;line-height:1.5}
+.quiz-options{display:grid;gap:9px;margin-top:20px}
+.quiz-option{
+  width:100%;padding:15px;border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;color:#fff;text-align:left;background:rgba(255,255,255,.04)
+}
+
+/* settings */
+.setting-box{
+  margin-top:14px;padding:16px;border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;background:rgba(255,255,255,.035)
+}
+.setting-title{font-size:13px;font-weight:700}
+.setting-description{margin-top:5px;color:rgba(255,255,255,.38);font-size:11px;line-height:1.6}
+.setting-button{
+  width:100%;margin-top:11px;padding:12px;border:1px solid rgba(255,255,255,.09);
+  border-radius:11px;color:#fff;background:rgba(255,255,255,.04)
+}
+#photoInput{display:none}
+.range{width:100%;margin-top:13px}
+
+/* KIOKU LEVEL / NEXT GOAL */
+.level-card{margin-top:12px;padding:17px;border-radius:18px}
+.level-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.level-name{font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.08em}
+.level-number{margin-top:4px;font-size:23px;font-weight:900}
+.level-xp{font-size:10px;color:#d5caff}
+.level-bar{height:7px;margin-top:13px;border-radius:100px;overflow:hidden;background:rgba(255,255,255,.07)}
+.level-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#7658ae,#9a8ae0,#8393db)}
+.next-goal{margin-top:12px;padding:15px 17px;border-radius:17px;cursor:pointer}
+.next-goal-label{font-size:9px;color:#cfc5ff;letter-spacing:.08em}
+.next-goal-title{margin-top:6px;font-size:14px;font-weight:800;line-height:1.5}
+.next-goal-sub{margin-top:5px;color:rgba(255,255,255,.4);font-size:10px}
+
+/* COMPLETE */
+.complete-modal{align-items:center;padding:22px}
+.complete-card{
+  width:min(100%,430px);padding:30px 22px;border:1px solid rgba(190,170,255,.2);
+  border-radius:28px;text-align:center;
+  background:linear-gradient(160deg,rgba(30,27,53,.98),rgba(8,10,20,.98));
+  box-shadow:0 0 70px rgba(125,95,210,.22)
+}
+.complete-symbol{font-size:40px;text-shadow:0 0 25px rgba(190,170,255,.7)}
+.complete-kicker{margin-top:15px;color:#cfc5ff;font-size:10px;letter-spacing:.18em}
+.complete-title{margin-top:10px;font-size:23px;font-weight:900;line-height:1.45}
+.complete-text{margin-top:12px;color:rgba(255,255,255,.52);font-size:12px;line-height:1.8}
+.complete-date{margin-top:15px;color:#d8ceff;font-size:12px}
+
+
+/* PHASE 2 */
+.level-title-name{margin-top:3px;color:rgba(255,255,255,.52);font-size:10px}
+.memory-card{padding:18px;border-radius:18px;cursor:pointer}
+.memory-kicker{color:#cfc5ff;font-size:9px;letter-spacing:.12em}
+.memory-title{margin-top:8px;font-size:16px;font-weight:850;line-height:1.5}
+.memory-text{margin-top:7px;color:rgba(255,255,255,.43);font-size:11px;line-height:1.7}
+.memory-note{margin-top:11px;padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.035);color:rgba(255,255,255,.58);font-size:10px;line-height:1.65}
+.complete-badge{display:inline-block;margin-right:5px;color:#cfc5ff;font-size:9px;font-weight:850;letter-spacing:.08em}
+.section-title,.hero h1,.hero p{text-shadow:0 2px 12px rgba(0,0,0,.75)}
+
+
+.cast-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.cast-header .panel-title{margin-bottom:0}
+.cast-toggle{padding:7px 10px;border:1px solid rgba(160,140,230,.18);border-radius:100px;color:#d8ceff;background:rgba(130,100,200,.08);font-size:10px}
+
+.next-kicker{font-size:9px;letter-spacing:.18em;color:#cfc5ff;font-weight:800;margin-bottom:7px}
+.next-for-you{position:relative;overflow:hidden;padding:22px 19px;border-radius:22px;margin-bottom:18px}
+.next-for-you:after{content:"✦";position:absolute;right:16px;top:8px;font-size:52px;color:rgba(205,190,255,.07);pointer-events:none}
+.next-for-you h2{font-size:20px;line-height:1.35;margin:0 0 8px;font-weight:900}
+.next-for-you p{font-size:11px;line-height:1.75;color:rgba(255,255,255,.48);margin:0 0 16px;max-width:310px}
+.next-quiz-button{width:100%;border:1px solid rgba(199,181,255,.28);border-radius:14px;padding:13px 14px;background:linear-gradient(135deg,rgba(145,112,220,.24),rgba(255,255,255,.055));color:#fff;font-size:12px;font-weight:800;letter-spacing:.03em}
+
+.news-section{margin:22px 0 6px}
+.news-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}
+.news-label{font-size:9px;letter-spacing:.18em;color:#cfc5ff;font-weight:800}
+.news-title{font-size:18px;font-weight:900;margin-top:4px}
+.news-source{font-size:9px;color:rgba(255,255,255,.36)}
+.news-scroll{display:flex;flex-direction:column;gap:10px;padding:2px 0 12px;overflow:visible}
+.news-card{display:block;width:100%;min-height:0;padding:15px 16px;border-radius:18px;position:relative;overflow:hidden;text-decoration:none;color:#fff}
+.news-card:after{content:"↗";position:absolute;right:14px;bottom:12px;color:rgba(255,255,255,.35);font-size:14px}
+.news-tag{display:inline-block;padding:4px 7px;border-radius:999px;background:rgba(175,145,255,.12);border:1px solid rgba(190,170,255,.13);font-size:8px;color:#d7ceff;letter-spacing:.08em}
+.news-card-title{font-size:13px;font-weight:800;line-height:1.6;margin:9px 24px 8px 0}
+.news-meta{font-size:9px;color:rgba(255,255,255,.38)}
+
+
+.bottom-nav .nav-item{min-width:0;flex:1}
+.bottom-nav .nav-label{font-size:8px}
+
+.bottom-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:center;gap:0!important}
+.bottom-nav .nav-item{width:auto!important;min-width:0!important;flex:none!important;padding-left:2px!important;padding-right:2px!important}
+.bottom-nav .nav-label{font-size:7.5px!important;white-space:nowrap!important}
+.bottom-nav .nav-icon{font-size:16px!important}
+.news-feed{display:flex;flex-direction:column;gap:12px}
+.news-feed-card{display:grid;grid-template-columns:112px minmax(0,1fr);gap:13px;padding:10px;border-radius:18px;text-decoration:none;color:#fff;min-height:112px}
+.news-thumb{width:112px;height:112px;border-radius:13px;object-fit:cover;background:rgba(255,255,255,.05)}
+.news-copy{min-width:0;padding:3px 3px 3px 0;display:flex;flex-direction:column}
+.news-feed-title{font-size:12px;font-weight:850;line-height:1.55;margin:7px 0 8px}
+.news-feed-meta{margin-top:auto;font-size:8.5px;color:rgba(255,255,255,.4)}
+.news-load{padding:18px 0 8px;text-align:center;color:rgba(255,255,255,.36);font-size:10px}
+@media(max-width:380px){.bottom-nav .nav-label{font-size:7px!important}.news-feed-card{grid-template-columns:96px minmax(0,1fr)}.news-thumb{width:96px;height:104px}}
+
+.news-live{display:flex;align-items:center;gap:6px;font-size:8px;color:rgba(255,255,255,.42)}
+.news-live-dot{width:6px;height:6px;border-radius:50%;background:#bba7ff;box-shadow:0 0 9px rgba(187,167,255,.7)}
+.news-retry{margin-top:8px;border:0;background:transparent;color:#cfc5ff;font-size:9px;text-decoration:underline}
+
+/* KIOKU NEWS FINAL */
+.bottom-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:0!important}
+.bottom-nav .nav-item{min-width:0!important;width:auto!important;padding-left:1px!important;padding-right:1px!important}
+.bottom-nav .nav-label{font-size:7.4px!important;white-space:nowrap!important}
+.news-feed{display:flex;flex-direction:column;gap:11px}
+.news-feed-card{display:grid;grid-template-columns:108px minmax(0,1fr);gap:12px;padding:10px;border-radius:18px;text-decoration:none;color:#fff}
+.news-thumb{width:108px;height:108px;object-fit:cover;border-radius:13px;background:rgba(255,255,255,.05)}
+.news-copy{min-width:0;padding:2px 2px 2px 0;display:flex;flex-direction:column}
+.news-feed-title{font-size:12px;font-weight:850;line-height:1.55;margin:7px 0 8px}
+.news-feed-meta{margin-top:auto;font-size:8.5px;color:rgba(255,255,255,.4)}
+.news-live{display:flex;align-items:center;gap:6px;font-size:8px;color:rgba(255,255,255,.42)}
+.news-live-dot{width:6px;height:6px;border-radius:50%;background:#bba7ff;box-shadow:0 0 9px rgba(187,167,255,.7)}
+.news-load{text-align:center;padding:17px 0;color:rgba(255,255,255,.36);font-size:9px}
+
+</style>
+</head>
+
+<body>
+
+<div id="background" class="background"></div>
+<div id="backgroundOverlay" class="background-overlay"></div>
+<div class="ambient"></div>
+
+<!-- HOME -->
+<section id="homePage" class="app-page active">
+<div class="container">
+
+<div class="topbar"><div class="logo">KIOKU</div></div>
+
+<div class="hero">
+<h1>「観た」を、記憶に。</h1>
+<p>あなたのアニメの記憶を、ひとつに。</p>
+</div>
+
+<div class="dashboard glass">
+<div class="dashboard-top">
+
+<div id="overallRing" class="ring">
+<div class="ring-content">
+<div id="overallPercent" class="ring-percent">0%</div>
+<div class="ring-label">総合充足率</div>
+</div>
+</div>
+
+<div>
+<div class="dashboard-heading">あなたのKIOKU</div>
+<div class="dashboard-sub">
+観た作品とエピソードが、<br>
+あなた自身のアニメの記録になります。
+</div>
+</div>
+
+</div>
+
+<div class="stats">
+<div class="stat"><div id="watchingCount" class="stat-number">0</div><div class="stat-label">視聴中</div></div>
+<div class="stat"><div id="completedCount" class="stat-number">0</div><div class="stat-label">完走</div></div>
+<div class="stat"><div id="watchedEpisodeCount" class="stat-number">0</div><div class="stat-label">視聴した話数</div></div>
+</div>
+</div>
+
+<div id="levelCard" class="level-card glass">
+  <div class="level-top">
+    <div>
+      <div class="level-name">KIOKU LEVEL</div>
+      <div id="kiokuLevel" class="level-number">LEVEL 1</div>
+      <div id="kiokuLevelTitle" class="level-title-name">はじまりのKIOKU</div>
+    </div>
+    <div id="kiokuXp" class="level-xp">0 / 100 XP</div>
+  </div>
+  <div class="level-bar"><div id="kiokuLevelBar" class="level-bar-fill" style="width:0%"></div></div>
+</div>
+
+<div id="nextGoalCard" class="next-goal glass" style="display:none">
+  <div class="next-goal-label">NEXT KIOKU</div>
+  <div id="nextGoalTitle" class="next-goal-title"></div>
+  <div id="nextGoalSub" class="next-goal-sub"></div>
+</div>
+
+<div id="memorySection" style="display:none">
+<div class="section-title">あの頃のKIOKU</div>
+<div id="memoryCard" class="memory-card glass">
+  <div class="memory-kicker">MEMORY RECALL</div>
+  <div id="memoryTitle" class="memory-title"></div>
+  <div id="memoryText" class="memory-text"></div>
+  <div id="memoryNote" class="memory-note" style="display:none"></div>
+</div>
+</div>
+
+<div class="section-title">クイックアクセス</div>
+
+<div class="quick-grid">
+<div class="quick-card glass" onclick="switchTab('library')">
+<div class="quick-icon">◇</div>
+<div class="quick-title">KIOKU</div>
+<div class="quick-text">視聴中の作品を記録</div>
+</div>
+
+<div class="quick-card glass" onclick="switchTab('discover')">
+<div class="quick-icon">✦</div>
+<div class="quick-title">次に何観る？</div>
+<div class="quick-text">30秒診断から作品を発見</div>
+</div>
+</div>
+
+<div class="section-title">最近のKIOKU</div>
+<div id="recentLibrary"></div>
+
+</div>
+</section>
+
+<!-- LIBRARY -->
+<section id="libraryPage" class="app-page">
+<div class="container">
+
+<div class="topbar"><div class="logo">KIOKU</div></div>
+
+<div class="page-heading">
+<h1>あなたのアニメ</h1>
+<p>観ている作品と、これまでに完走した作品。</p>
+</div>
+
+<div class="filter-row">
+<button class="filter active" data-filter="all" onclick="setLibraryFilter('all')">すべて</button>
+<button class="filter" data-filter="watching" onclick="setLibraryFilter('watching')">視聴中</button>
+<button class="filter" data-filter="completed" onclick="setLibraryFilter('completed')">完走</button>
+<button class="filter" data-filter="unwatched" onclick="setLibraryFilter('unwatched')">あとで観る</button>
+</div>
+
+<div id="library" style="margin-top:16px"></div>
+</div>
+</section>
+
+<!-- DISCOVER -->
+<section id="discoverPage" class="app-page">
+<div style="margin:18px 0 8px">
+  <div class="next-kicker">NEXT</div>
+  <div style="font-size:26px;font-weight:900;letter-spacing:.02em">次の作品と、出会う。</div>
+</div>
+
+<div class="next-for-you glass">
+  <div class="next-kicker">FOR YOU</div>
+  <h2>今夜は、何を観る？</h2>
+  <p>気分・世界観・長さ・声優から、今のあなたに合う一本を探します。</p>
+
+  <button class="next-quiz-button" onclick="openQuiz()">✦ 30秒で診断する</button>
+</div>
+
+
+
+<div class="container">
+
+<div class="topbar"><div class="logo">KIOKU</div></div>
+
+<div class="page-heading">
+<h1>NEXT</h1>
+<p>次の一本を、あなたの気分から。</p>
+</div>
+
+<div class="discover-hero glass">
+<div class="discover-symbol">✦</div>
+<div class="discover-title">今、何を観たい？</div>
+<div class="discover-text">
+気分・ジャンル・長さ・重視したいポイント・好きな声優から、
+あなたに合うアニメを探します。
+</div>
+<button class="primary-button" onclick="openQuiz()">30秒で診断する</button>
+</div>
+
+<div class="section-title">作品名から探す</div>
+
+<div class="search-row">
+<input id="searchInput" class="search-input" placeholder="アニメのタイトルを入力…">
+<button class="search-button" onclick="searchAnime()">検索</button>
+</div>
+
+<div id="searchResults" class="results"></div>
+</div>
+</section>
+
+<!-- NEWS -->
+<section id="newsPage" class="app-page">
+<div class="container">
+  <div class="topbar"><div class="logo">KIOKU</div></div>
+  <div class="page-heading">
+    <div class="news-label">NEWS</div>
+    <h1>アニメの今を知る。</h1>
+    <p>新作・続編・声優・放送情報をチェック。</p>
+  </div>
+<div class="news-section">
+  <div class="news-head">
+    <div>
+      <div class="news-label">LATEST</div>
+      <div class="news-title">最新ニュース</div>
+    </div>
+    <div class="news-live"><span class="news-live-dot"></span><span id="newsStatus">更新中</span></div>
+  </div>
+  <div id="newsFeed" class="news-feed"></div>
+  <div id="newsLoadMore" class="news-load">スクロールして続きを見る ↓</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PROFILE -->
+<section id="profilePage" class="app-page">
+<div class="container">
+
+<div class="topbar"><div class="logo">KIOKU</div></div>
+
+<div class="page-heading">
+<h1>マイページ</h1>
+<p>あなたが観てきたアニメの記録。</p>
+</div>
+
+<div class="section-title">あなたの記録</div>
+
+<div class="profile-card glass">
+<div class="profile-title">あなたのKIOKU</div>
+<div class="profile-description">観てきた作品と、そのときの記憶。</div>
+
+<div class="stats">
+<div class="stat"><div id="profileCompleted" class="stat-number">0</div><div class="stat-label">完走作品</div></div>
+<div class="stat"><div id="profileEpisodes" class="stat-number">0</div><div class="stat-label">視聴話数</div></div>
+<div class="stat"><div id="profileNotes" class="stat-number">0</div><div class="stat-label">感想</div></div>
+</div>
+
+<button class="setting-link" onclick="openViewingStats()">
+<span>視聴記録の詳細を見る</span><span>›</span>
+</button>
+</div>
+
+<div class="section-title">あなたの傾向</div>
+
+<div class="trend-summary glass">
+<div class="trend-head">
+<div>
+<div class="trend-head-title">あなたの視聴傾向</div>
+<div class="trend-head-text">KIOKUに残した記録から自動で分析します。</div>
+</div>
+<div id="analysisLevel" class="trend-level">ANALYSIS 1</div>
+</div>
+
+<div class="trend-grid">
+<div class="trend-stat"><div id="completionRate" class="trend-stat-number">0%</div><div class="trend-stat-label">完走率</div></div>
+<div class="trend-stat"><div id="averageEpisodes" class="trend-stat-number">0</div><div class="trend-stat-label">平均視聴話数 / 作品</div></div>
+<div class="trend-stat"><div id="noteRate" class="trend-stat-number">0%</div><div class="trend-stat-label">感想を残した割合</div></div>
+<div class="trend-stat"><div id="activeAnimeCount" class="trend-stat-number">0</div><div class="trend-stat-label">視聴経験作品</div></div>
+</div>
+
+<div class="analysis-progress">
+<div class="analysis-progress-top">
+<span>分析データ</span>
+<span id="analysisProgressText">0 / 100話</span>
+</div>
+<div class="trend-bar">
+<div id="analysisProgressBar" class="trend-bar-fill" style="width:0%"></div>
+</div>
+</div>
+</div>
+
+<div class="section-title">あなたのタイプ</div>
+
+<div class="personality-card glass">
+<div id="personalitySymbol" class="personality-symbol">✦</div>
+<div class="personality-small">YOUR KIOKU STYLE</div>
+<div id="personalityTitle" class="personality-title">KIOKUを作成中</div>
+<div id="personalityText" class="personality-text">
+アニメを記録すると、あなたの視聴スタイルが見えてきます。
+</div>
+</div>
+
+<div class="section-title">最近のKIOKU</div>
+
+<div class="trend-card glass">
+<div class="trend-icon">◇</div>
+<div class="trend-card-label">最後に観た作品</div>
+<div id="profileLastAnime" class="trend-card-value">まだ記録がありません</div>
+<div class="trend-card-sub">最近観た作品がここに表示されます。</div>
+</div>
+
+<div class="trend-card glass">
+<div class="trend-icon">✓</div>
+<div class="trend-card-label">最近完走した作品</div>
+<div id="latestCompletedAnime" class="trend-card-value">まだ完走作品がありません</div>
+<div id="latestCompletedAnimeSub" class="trend-card-sub">最終話まで記録するとここに残ります。</div>
+</div>
+
+<div class="trend-card glass">
+<div class="trend-icon">◉</div>
+<div class="trend-card-label">現在視聴中</div>
+<div id="profileWatching" class="trend-card-value">0作品</div>
+</div>
+
+<div class="trend-card glass">
+<div class="trend-icon">✦</div>
+<div class="trend-card-label">記録したアニメ</div>
+<div id="profileAnimeCount" class="trend-card-value">0作品</div>
+</div>
+
+<div class="section-title">設定</div>
+
+<button class="setting-link" onclick="openSettings()">
+<span>背景・プレミアム設定</span><span>›</span>
+</button>
+
+</div>
+</section>
+
+<!-- DETAIL -->
+<section id="detailPage">
+<div class="container">
+
+<button class="back" onclick="closeDetail()">‹ 戻る</button>
+
+<div class="detail-header">
+<img id="detailPoster" class="detail-poster">
+
+<div class="detail-info">
+<h1 id="detailTitle" class="detail-title"></h1>
+<div id="detailMeta" class="detail-meta"></div>
+<div id="detailPercent" class="big-percent">0%</div>
+<div id="detailEpisodeCount" class="detail-meta"></div>
+</div>
+</div>
+
+<div class="progress" style="margin-top:18px;height:8px">
+<div id="detailProgressBar" class="progress-bar"></div>
+</div>
+
+<button id="markAllWatchedButton" class="all-watched-button" onclick="markAllWatched()">
+✓ 全話視聴
+</button>
+
+<div class="date-grid">
+<div class="date-box"><div class="date-label">視聴開始</div><div id="startDate" class="date-value">—</div></div>
+<div class="date-box"><div class="date-label">最終視聴</div><div id="lastDate" class="date-value">—</div></div>
+<div class="date-box"><div class="date-label">完走</div><div id="completeDate" class="date-value">—</div></div>
+</div>
+
+<div class="panel glass">
+<div class="panel-title">エピソード</div>
+<div id="episodeList"><div class="empty">読み込み中…</div></div>
+</div>
+
+<div class="panel glass">
+<div class="panel-title">主題歌</div>
+<div id="themeList"><div class="empty">読み込み中…</div></div>
+</div>
+
+<div class="panel glass">
+<div class="cast-header">
+  <div class="panel-title">キャスト</div>
+  <button id="castToggleButton" class="cast-toggle" onclick="toggleCast()">主要5人</button>
+</div>
+<div id="castList"><div class="empty">読み込み中…</div></div>
+</div>
+
+<div class="panel glass">
+<div class="panel-title">編集</div>
+<button class="danger-button" onclick="deleteCurrentAnime()">この作品をKIOKUから削除</button>
+</div>
+
+</div>
+</section>
+
+<!-- NAV -->
+<div id="bottomNavigation" class="bottom-nav-wrap">
+<nav class="bottom-nav">
+
+<button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+<span class="nav-icon">⌂</span><span class="nav-label">ホーム</span>
+</button>
+
+<button class="nav-item" data-tab="library" onclick="switchTab('library')">
+<span class="nav-icon">◇</span><span class="nav-label">KIOKU</span>
+</button>
+
+<button class="nav-item" data-tab="discover" onclick="switchTab('discover')">
+<span class="nav-icon">✦</span><span class="nav-label">NEXT</span>
+</button>
+
+<button class="nav-item" data-tab="news" onclick="switchTab('news')">
+<span class="nav-icon">▤</span><span class="nav-label">NEWS</span>
+</button>
+
+<button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+<span class="nav-icon">◉</span><span class="nav-label">マイページ</span>
+</button>
+
+</nav>
+</div>
+
+<!-- EPISODE MODAL -->
+<div id="episodeModal" class="modal">
+<div class="sheet">
+
+<div class="sheet-header">
+<div>
+<div id="episodeModalTitle" class="sheet-title"></div>
+<div id="episodeModalDate" class="detail-meta"></div>
+</div>
+<button class="close" onclick="closeEpisodeModal()">×</button>
+</div>
+
+<button id="watchedToggle" class="watch-toggle" onclick="toggleEpisodeWatched()">○ 視聴済みにする</button>
+
+<label class="text-label">視聴日</label>
+<input id="episodeWatchDate" class="search-input" type="date">
+
+<label class="text-label">この話の記憶</label>
+<textarea id="episodeNote" class="note-input" placeholder="感じたこと、好きだったシーンなどを自由に残せます。"></textarea>
+
+<button class="save-button" onclick="saveEpisodeNote()">保存</button>
+
+</div>
+</div>
+
+<!-- VIEWING STATS -->
+<div id="viewingStatsModal" class="modal">
+<div class="sheet">
+
+<div class="sheet-header">
+<div>
+<div class="sheet-title">視聴記録</div>
+<div class="detail-meta">あなたが観てきたアニメの記録。</div>
+</div>
+<button class="close" onclick="closeViewingStats()">×</button>
+</div>
+
+<div class="section-title">今月</div>
+<div class="period-card glass">
+<div class="period-label">THIS MONTH</div>
+<div id="monthEpisodeCount" class="period-main">0話</div>
+<div id="monthAnimeCount" class="period-sub">0作品を視聴</div>
+</div>
+
+<div class="section-title">今年</div>
+<div class="period-card glass">
+<div class="period-label">THIS YEAR</div>
+<div id="yearEpisodeCount" class="period-main">0話</div>
+<div id="yearAnimeCount" class="period-sub">0作品を視聴</div>
+</div>
+
+<div class="section-title">今まで</div>
+<div class="period-card glass">
+<div class="period-label">ALL TIME</div>
+<div id="allEpisodeCount" class="period-main">0話</div>
+<div id="allAnimeCount" class="period-sub">0作品を視聴</div>
+</div>
+
+<div class="section-title">記録</div>
+
+<div class="insight-card glass">
+<div class="insight-label">完走した作品</div>
+<div id="statsCompletedAnime" class="insight-value">0作品</div>
+</div>
+
+<div class="insight-card glass">
+<div class="insight-label">現在視聴中</div>
+<div id="statsWatchingAnime" class="insight-value">0作品</div>
+</div>
+
+<div class="insight-card glass">
+<div class="insight-label">残した感想</div>
+<div id="statsNotes" class="insight-value">0件</div>
+</div>
+
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quizModal" class="modal">
+<div class="sheet">
+
+<div class="sheet-header">
+<div>
+<div class="sheet-title">次に何観る？</div>
+<div id="quizProgress" class="quiz-progress">1 / 6</div>
+</div>
+<button class="close" onclick="closeQuiz()">×</button>
+</div>
+
+<div id="quizContent"></div>
+
+</div>
+</div>
+
+<!-- COMPLETE MODAL -->
+<div id="completeModal" class="modal complete-modal">
+  <div class="complete-card">
+    <div class="complete-symbol">✦</div>
+    <div class="complete-kicker">KIOKU COMPLETE</div>
+    <div id="completeAnimeTitle" class="complete-title"></div>
+    <div id="completeAnimeText" class="complete-text"></div>
+    <div id="completeAnimeDate" class="complete-date"></div>
+    <button class="primary-button" onclick="closeCompleteModal()">KIOKUに残す</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsModal" class="modal">
+<div class="sheet">
+
+<div class="sheet-header">
+<div class="sheet-title">設定</div>
+<button class="close" onclick="closeSettings()">×</button>
+</div>
+
+<div class="setting-box">
+<div class="setting-title">🧪 プレミアムをテスト</div>
+<div class="setting-description">開発用です。実際の課金は発生しません。</div>
+<button id="premiumButton" class="setting-button" onclick="togglePremium()"></button>
+</div>
+
+<div class="setting-box">
+<div class="setting-title">自分の写真を背景に</div>
+<div class="setting-description">プレミアムでは好きな写真をKIOKUの背景にできます。</div>
+<button class="setting-button" onclick="selectPhoto()">写真を選ぶ</button>
+<input id="photoInput" type="file" accept="image/*" onchange="setPhoto(event)">
+</div>
+
+<div class="setting-box">
+<div class="setting-title">背景の暗さ</div>
+<input id="darknessRange" class="range" type="range" min="15" max="90" value="58" oninput="changeDarkness(this.value)">
+</div>
+
+<div class="setting-box">
+<div class="setting-title">標準背景</div>
+<button class="setting-button" onclick="resetBackground()">標準背景に戻す</button>
+</div>
+
+</div>
+</div>
+
+<script>
+/* STATE */
+let records=[];
+let currentAnimeId=null;
+let currentEpisodeNumber=null;
+let activeTab="home";
+let libraryFilter="all";
+let premium=localStorage.getItem("premiumTest")==="true";
+let quizStep=0;
+let castExpanded=false;
+let quizAnswers={mood:"",genre:"",length:"",priority:"",voiceActor:"",voicePriority:""};
+
+/*
+ 日本語CV補完辞書
+ APIから日本語名が取れない場合に使用。
+ 後から自由に追加できます。
+*/
+const japaneseVoiceActorNames={
+  "Shouya Chiba":"千葉翔也",
+  "Chiba, Shouya":"千葉翔也",
+  "Ikumi Hasegawa":"長谷川育美",
+  "Hasegawa, Ikumi":"長谷川育美",
+  "Natsuki Hanae":"花江夏樹",
+  "Hanae, Natsuki":"花江夏樹",
+  "Akari Kitou":"鬼頭明里",
+  "Kitou, Akari":"鬼頭明里",
+  "Hiro Shimono":"下野紘",
+  "Shimono, Hiro":"下野紘",
+  "Yoshitsugu Matsuoka":"松岡禎丞",
+  "Matsuoka, Yoshitsugu":"松岡禎丞",
+  "Saori Hayami":"早見沙織",
+  "Hayami, Saori":"早見沙織",
+  "Aoi Yuuki":"悠木碧",
+  "Yuuki, Aoi":"悠木碧",
+  "Kana Hanazawa":"花澤香菜",
+  "Hanazawa, Kana":"花澤香菜",
+  "Yuki Kaji":"梶裕貴",
+  "Kaji, Yuki":"梶裕貴",
+  "Mamoru Miyano":"宮野真守",
+  "Miyano, Mamoru":"宮野真守",
+  "Hiroshi Kamiya":"神谷浩史",
+  "Kamiya, Hiroshi":"神谷浩史",
+  "Yuichi Nakamura":"中村悠一",
+  "Nakamura, Yuuichi":"中村悠一",
+  "Junichi Suwabe":"諏訪部順一",
+  "Suwabe, Junichi":"諏訪部順一",
+  "Takahiro Sakurai":"櫻井孝宏",
+  "Sakurai, Takahiro":"櫻井孝宏",
+  "Rie Takahashi":"高橋李依",
+  "Takahashi, Rie":"高橋李依",
+  "Inori Minase":"水瀬いのり",
+  "Minase, Inori":"水瀬いのり",
+  "Ayane Sakura":"佐倉綾音",
+  "Sakura, Ayane":"佐倉綾音",
+  "Maaya Sakamoto":"坂本真綾",
+  "Sakamoto, Maaya":"坂本真綾"
+};
+
+/* LOAD */
+try{
+  const keys=["watchRecords","kiokuRecords","records","kioku_records"];
+  let raw=null;
+
+  for(const key of keys){
+    const value=localStorage.getItem(key);
+    if(value){
+      raw=value;
+      break;
+    }
+  }
+
+  records=raw ? JSON.parse(raw) : [];
+}catch{
+  records=[];
+}
+
+if(!Array.isArray(records)) records=[];
+
+records=records.filter(record=>!record.type || record.type==="Anime");
+
+records.forEach(record=>{
+  record.type="Anime";
+
+  if(!record.episodeRecords){
+    record.episodeRecords={};
+    const oldWatched=Number(record.watchedEpisode)||0;
+
+    for(let i=1;i<=oldWatched;i++){
+      record.episodeRecords[i]={
+        watched:true,
+        watchedDate:record.lastWatchedDate||record.startDate||"",
+        note:""
+      };
+    }
+  }
+
+  if(!record.startDate && Number(record.watchedEpisode)>0){
+    record.startDate=record.timestamp ? dateFromTimestamp(record.timestamp) : "";
+  }
+
+  recalculateDates(record);
+});
+
+saveRecords();
+
+/* HELPERS */
+function escapeHTML(text){
+  const div=document.createElement("div");
+  div.textContent=String(text??"");
+  return div.innerHTML;
+}
+
+function today(){
+  const d=new Date();
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
+function dateFromTimestamp(timestamp){
+  const d=new Date(timestamp);
+  if(Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function formatDate(value){
+  if(!value) return "—";
+  const parts=String(value).split("-");
+  if(parts.length!==3) return value;
+  return `${parts[0]}.${parts[1]}.${parts[2]}`;
+}
+
+function saveRecords(){
+  const clean=records.map(record=>{
+    const copy={...record};
+    delete copy._episodes;
+    return copy;
+  });
+
+  localStorage.setItem("watchRecords",JSON.stringify(clean));
+}
+
+function getWatchedCount(record){
+  return Object.values(record.episodeRecords||{}).filter(x=>x&&x.watched).length;
+}
+
+function getNoteCount(record){
+  return Object.values(record.episodeRecords||{}).filter(x=>x&&String(x.note||"").trim()).length;
+}
+
+function getProgress(record){
+  const total=Number(record.totalEpisodes)||0;
+  if(!total) return 0;
+  return Math.min(100,Math.round(getWatchedCount(record)/total*100));
+}
+
+function isCompleted(record){
+  const total=Number(record.totalEpisodes)||0;
+  return total>0 && getWatchedCount(record)>=total;
+}
+
+function isWatching(record){
+  const watched=getWatchedCount(record);
+  return watched>0&&!isCompleted(record);
+}
+
+function getKiokuXP(){
+  const stats=getStats();
+  return stats.watchedEpisodes*10 + stats.completed*50 + stats.notes*5;
+}
+
+function getKiokuLevelInfo(){
+  const xp=getKiokuXP();
+  const perLevel=100;
+  const level=Math.floor(xp/perLevel)+1;
+  const current=xp%perLevel;
+  return {xp,level,current,needed:perLevel};
+}
+
+function updateKiokuLevel(){
+  const info=getKiokuLevelInfo();
+  document.getElementById("kiokuLevel").textContent=`LEVEL ${info.level}`;
+  document.getElementById("kiokuXp").textContent=`${info.current} / ${info.needed} XP`;
+  document.getElementById("kiokuLevelBar").style.width=`${info.current}%`;
+
+  let title="はじまりのKIOKU";
+  if(info.level>=3) title="アニメ探索者";
+  if(info.level>=5) title="記憶コレクター";
+  if(info.level>=8) title="物語の旅人";
+  if(info.level>=12) title="KIOKU ARCHIVIST";
+  if(info.level>=20) title="記憶の継承者";
+  document.getElementById("kiokuLevelTitle").textContent=title;
+}
+
+function updateNextGoal(){
+  const card=document.getElementById("nextGoalCard");
+  const candidates=records
+    .filter(isWatching)
+    .map(record=>{
+      const watched=getWatchedCount(record);
+      const total=Number(record.totalEpisodes)||0;
+      const percent=total?Math.round(watched/total*100):0;
+      let goalPercent=null;
+      for(const mark of [10,25,50,75,90]){
+        if(percent<mark){ goalPercent=mark; break; }
+      }
+      const milestoneEpisodes=goalPercent?Math.max(1,Math.ceil(total*goalPercent/100)-watched):null;
+      const remaining=Math.max(0,total-watched);
+      const nearCount=milestoneEpisodes&&milestoneEpisodes<remaining?milestoneEpisodes:remaining;
+      return {record,watched,total,percent,goalPercent,milestoneEpisodes,remaining,nearCount};
+    })
+    .filter(x=>x.total>0&&x.remaining>0)
+    .sort((a,b)=>a.nearCount-b.nearCount || b.percent-a.percent);
+
+  if(!candidates.length){
+    card.style.display="none";
+    card.onclick=null;
+    return;
+  }
+
+  const best=candidates[0];
+  card.style.display="block";
+
+  if(best.remaining<=3 || !best.goalPercent || best.milestoneEpisodes>=best.remaining){
+    document.getElementById("nextGoalTitle").textContent=
+      best.remaining===1
+        ? `あと1話で「${best.record.title}」完走`
+        : `あと${best.remaining}話で「${best.record.title}」完走`;
+    document.getElementById("nextGoalSub").textContent=
+      `現在 ${best.watched} / ${best.total}話 ・ ${best.percent}%`;
+  }else{
+    document.getElementById("nextGoalTitle").textContent=
+      `あと${best.milestoneEpisodes}話で${best.goalPercent}%`;
+    document.getElementById("nextGoalSub").textContent=
+      `「${best.record.title}」・ 現在${best.percent}%`;
+  }
+
+  card.onclick=()=>openDetail(best.record.id);
+}
+
+function updateMemoryRecall(){
+  const section=document.getElementById("memorySection");
+  const title=document.getElementById("memoryTitle");
+  const text=document.getElementById("memoryText");
+  const note=document.getElementById("memoryNote");
+
+  const dated=[];
+  records.forEach(record=>{
+    Object.entries(record.episodeRecords||{}).forEach(([number,item])=>{
+      if(item&&item.watched&&item.watchedDate){
+        dated.push({record,number:Number(number),date:item.watchedDate,note:String(item.note||"").trim()});
+      }
+    });
+  });
+
+  if(!dated.length){
+    section.style.display="none";
+    return;
+  }
+
+  const now=new Date();
+  const todayMonth=now.getMonth()+1;
+  const todayDay=now.getDate();
+
+  let candidates=dated.filter(x=>{
+    const p=x.date.split("-").map(Number);
+    return p.length===3 && p[1]===todayMonth && p[2]===todayDay && p[0]<now.getFullYear();
+  });
+
+  let label="以前の今日";
+
+  if(!candidates.length){
+    const nowTime=now.getTime();
+    candidates=dated
+      .map(x=>{
+        const d=new Date(x.date+"T00:00:00");
+        const days=Math.floor((nowTime-d.getTime())/86400000);
+        return {...x,days};
+      })
+      .filter(x=>x.days>=30)
+      .sort((a,b)=>Math.abs(a.days-90)-Math.abs(b.days-90))
+      .slice(0,8);
+    label="少し前のKIOKU";
+  }
+
+  if(!candidates.length){
+    section.style.display="none";
+    return;
+  }
+
+  const chosen=candidates[0];
+  section.style.display="block";
+  title.textContent=`${label}、「${chosen.record.title}」`;
+  text.textContent=`第${chosen.number}話を ${formatDate(chosen.date)} に観ていました。タップすると作品のKIOKUを開きます。`;
+
+  if(chosen.note){
+    note.style.display="block";
+    note.textContent=`✎ ${chosen.note}`;
+  }else{
+    note.style.display="none";
+    note.textContent="";
+  }
+
+  document.getElementById("memoryCard").onclick=()=>openDetail(chosen.record.id);
+}
+
+function showCompleteModal(record){
+  document.getElementById("completeAnimeTitle").textContent=record.title;
+  document.getElementById("completeAnimeText").textContent=
+    `全${Number(record.totalEpisodes)||getWatchedCount(record)}話を完走しました。\nこの作品を観ていた時間も、KIOKUへ。`;
+  document.getElementById("completeAnimeText").style.whiteSpace="pre-line";
+  document.getElementById("completeAnimeDate").textContent=formatDate(record.completedDate||today());
+  document.getElementById("completeModal").classList.add("show");
+}
+
+function closeCompleteModal(){
+  document.getElementById("completeModal").classList.remove("show");
+}
+
+/* NAV */
+
+const KIOKU_NEWS_FALLBACK=[
+ {tag:"ANIME",title:"新作・続編・放送情報をKIOKU NEWSでチェック",source:"KIOKU NEWS",date:"",url:"https://www.animatetimes.com/anime/",img:"https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=500&q=70",time:6},
+ {tag:"CAST",title:"声優・キャストに関する最新情報",source:"アニメイトタイムズ",date:"",url:"https://www.animatetimes.com/seiyu/",img:"https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=500&q=70",time:5},
+ {tag:"NEWS",title:"アニメ最新ニュースをもっと見る",source:"アニメ！アニメ！",date:"",url:"https://animeanime.jp/category/news/latest/latest/",img:"https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=500&q=70",time:4}
+];
+let newsItems=[];
+let newsShown=0;
+const NEWS_BATCH=8;
+let newsLoading=false;
+let newsLoadedOnce=false;
+
+/*
+ KIOKU NEWS:
+ Browser-only HTML cannot reliably read every publisher directly because of CORS.
+ We first try public RSS-to-JSON gateways, cache successful results locally,
+ and fall back to the built-in latest cards if the network blocks them.
+*/
+const NEWS_FEEDS=[
+  {source:"アニメ！アニメ！", feed:"https://animeanime.jp/rss/index.rdf"},
+  {source:"アニメイトタイムズ", feed:"https://www.animatetimes.com/rss.xml"}
+];
+const RSS_GATEWAYS=[
+  url=>"https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(url),
+  url=>"https://api.allorigins.win/raw?url="+encodeURIComponent(url)
+];
+const NEWS_CACHE_KEY="kiokuLiveNewsCacheV1";
+
+function stripHtml(v){
+  const d=document.createElement("div"); d.innerHTML=String(v||"");
+  return (d.textContent||"").trim();
+}
+function extractImage(item){
+  return item.thumbnail ||
+    item.enclosure?.link || item.enclosure?.url ||
+    (item.content||item.description||"").match(/<img[^>]+src=["']([^"']+)/i)?.[1] || "";
+}
+function tagForTitle(title){
+  const t=String(title);
+  if(/声優|キャスト|出演/.test(t)) return "CAST";
+  if(/劇場|映画/.test(t)) return "MOVIE";
+  if(/PV|映像|ビジュアル/.test(t)) return "PV";
+  if(/続編|第[23456789]期|制作決定/.test(t)) return "SEQUEL";
+  return "ANIME";
+}
+function normalizeDate(v){
+  const d=new Date(v);
+  if(Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
+}
+function uniqueNews(items){
+  const seen=new Set();
+  return items.filter(x=>{
+    const key=(x.url||"")+"|"+(x.title||"");
+    if(!x.title||!x.url||seen.has(key)) return false;
+    seen.add(key); return true;
+  }).sort((a,b)=>(b.time||0)-(a.time||0));
+}
+async function fetchFeedViaGateway(feedInfo,gateway){
+  const url=gateway(feedInfo.feed);
+  const res=await fetch(url,{cache:"no-store"});
+  if(!res.ok) throw new Error("news "+res.status);
+  const data=await res.json();
+  const arr=Array.isArray(data.items)?data.items:[];
+  return arr.map(item=>{
+    const rawDate=item.pubDate||item.published||item.date||"";
+    const time=Date.parse(rawDate)||0;
+    return {
+      tag:tagForTitle(item.title),
+      title:stripHtml(item.title),
+      source:feedInfo.source,
+      date:normalizeDate(rawDate),
+      url:item.link||item.url||"",
+      img:extractImage(item),
+      time
+    };
+  });
+}
+function cachedNews(){
+  try{
+    const c=JSON.parse(localStorage.getItem(NEWS_CACHE_KEY)||"null");
+    if(c&&Array.isArray(c.items)) return c;
+  }catch(e){}
+  return null;
+}
+function saveNewsCache(items){
+  try{localStorage.setItem(NEWS_CACHE_KEY,JSON.stringify({savedAt:Date.now(),items:items.slice(0,100)}));}catch(e){}
+}
+function newsFallback(el){
+  el.style.display="none";
+  const card=el.closest(".news-feed-card");
+  if(card) card.style.gridTemplateColumns="1fr";
+}
+function renderMoreNews(){
+  const feed=document.getElementById("newsFeed");
+  if(!feed) return;
+  const batch=newsItems.slice(newsShown,newsShown+NEWS_BATCH);
+  batch.forEach(item=>{
+    const a=document.createElement("a");
+    a.className="news-feed-card glass";
+    a.href=item.url;a.target="_blank";a.rel="noopener";
+    a.innerHTML=`${item.img?`<img class="news-thumb" src="${escapeHTML(item.img)}" loading="lazy" onerror="newsFallback(this)">`:""}
+      <div class="news-copy"><div><span class="news-tag">${escapeHTML(item.tag||"ANIME")}</span></div>
+      <div class="news-feed-title">${escapeHTML(item.title)}</div>
+      <div class="news-feed-meta">${escapeHTML(item.source)}${item.date?" ・ "+escapeHTML(item.date):""}　↗</div></div>`;
+    feed.appendChild(a);
+  });
+  newsShown+=batch.length;
+  const more=document.getElementById("newsLoadMore");
+  if(more){
+    if(newsShown<newsItems.length) more.textContent="スクロールして続きを見る ↓";
+    else more.innerHTML=`ここまで読み込みました${newsLoading?"":"<br><button class='news-retry' onclick='loadLiveNews(true)'>最新情報を再読み込み</button>"}`;
+  }
+}
+async function loadLiveNews(force=false){
+  if(newsLoading) return;
+  const status=document.getElementById("newsStatus");
+  const feed=document.getElementById("newsFeed");
+  const cached=cachedNews();
+
+  if(!force && cached && cached.items.length){
+    newsItems=cached.items;
+    newsShown=0;
+    if(feed) feed.innerHTML="";
+    renderMoreNews();
+    if(status) status.textContent="キャッシュ表示";
+  }
+
+  newsLoading=true;
+  if(status) status.textContent="最新情報を取得中…";
+  let live=[];
+  for(const feedInfo of NEWS_FEEDS){
+    for(const gateway of RSS_GATEWAYS){
+      try{
+        const got=await fetchFeedViaGateway(feedInfo,gateway);
+        if(got.length){ live.push(...got); break; }
+      }catch(e){ console.warn("NEWS feed",feedInfo.source,e); }
+    }
+  }
+  live=uniqueNews(live);
+
+  if(live.length){
+    newsItems=live;
+    saveNewsCache(live);
+    newsShown=0;
+    if(feed) feed.innerHTML="";
+    renderMoreNews();
+    if(status) status.textContent="LIVE";
+  }else if(newsItems.length){
+    if(status) status.textContent="保存済み";
+  }else{
+    // A compact offline fallback so NEWS never becomes blank.
+    newsItems=[
+      {tag:"NEWS",title:"最新ニュースを取得できませんでした。通信環境を確認して再読み込みしてください。",source:"KIOKU",date:"",url:"https://www.animatetimes.com/anime/",img:"",time:0}
+    ];
+    newsShown=0;
+    if(feed) feed.innerHTML="";
+    renderMoreNews();
+    if(status) status.textContent="OFFLINE";
+  }
+  newsLoading=false;
+  newsLoadedOnce=true;
+}
+function resetNewsFeed(){
+  const feed=document.getElementById("newsFeed");
+  if(newsLoadedOnce || !feed) return;
+  const cached=cachedNews();
+  newsItems=(cached&&cached.items&&cached.items.length)?cached.items:KIOKU_NEWS_FALLBACK;
+  newsShown=0;
+  feed.innerHTML="";
+  renderMoreNews();
+  const status=document.getElementById("newsStatus");
+  if(status) status.textContent=cached?"保存済み":"NEWS";
+  newsLoadedOnce=true;
+  setTimeout(()=>loadLiveNews(true),80);
+}
+window.addEventListener("scroll",()=>{
+  if(activeTab!=="news") return;
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-500){
+    if(newsShown<newsItems.length) renderMoreNews();
+  }
+});
+
+function switchTab(tab){
+  activeTab=tab;
+  currentAnimeId=null;
+
+  document.getElementById("detailPage").style.display="none";
+  document.getElementById("bottomNavigation").style.display="block";
+
+  document.querySelectorAll(".app-page").forEach(page=>page.classList.remove("active"));
+
+  const map={
+    home:"homePage",
+    library:"libraryPage",
+    discover:"discoverPage",
+    news:"newsPage",
+    profile:"profilePage"
+  };
+
+  document.getElementById(map[tab]).classList.add("active");
+
+  document.querySelectorAll(".nav-item").forEach(item=>{
+    item.classList.toggle("active",item.dataset.tab===tab);
+  });
+
+  refreshApp();
+  if(tab==="news") resetNewsFeed();
+  window.scrollTo(0,0);
+}
+
+/* STATS */
+function getStats(){
+  let totalEpisodes=0;
+  let watchedEpisodes=0;
+  let watching=0;
+  let completed=0;
+  let notes=0;
+
+  records.forEach(record=>{
+    const total=Number(record.totalEpisodes)||0;
+    const watched=getWatchedCount(record);
+
+    totalEpisodes+=total;
+    watchedEpisodes+=watched;
+    notes+=getNoteCount(record);
+
+    if(isCompleted(record)) completed++;
+    else if(isWatching(record)) watching++;
+  });
+
+  const percent=totalEpisodes ? Math.round(watchedEpisodes/totalEpisodes*100) : 0;
+
+  return {totalEpisodes,watchedEpisodes,watching,completed,notes,percent};
+}
+
+function updateDashboard(){
+  const stats=getStats();
+
+  document.getElementById("overallPercent").textContent=`${stats.percent}%`;
+  document.getElementById("overallRing").style.background=
+    `conic-gradient(#9278dd ${stats.percent*3.6}deg,rgba(255,255,255,.08) 0deg)`;
+
+  document.getElementById("watchingCount").textContent=stats.watching;
+  document.getElementById("completedCount").textContent=stats.completed;
+  document.getElementById("watchedEpisodeCount").textContent=stats.watchedEpisodes;
+
+  document.getElementById("profileCompleted").textContent=stats.completed;
+  document.getElementById("profileEpisodes").textContent=stats.watchedEpisodes;
+  document.getElementById("profileNotes").textContent=stats.notes;
+  document.getElementById("profileWatching").textContent=`${stats.watching}作品`;
+  document.getElementById("profileAnimeCount").textContent=`${records.length}作品`;
+
+  const last=[...records]
+    .filter(r=>r.lastWatchedDate)
+    .sort((a,b)=>String(b.lastWatchedDate).localeCompare(String(a.lastWatchedDate)))[0];
+
+  document.getElementById("profileLastAnime").textContent=
+    last ? last.title : "まだ記録がありません";
+}
+
+/* PERIOD STATS */
+function getViewingPeriodStats(){
+  const now=new Date();
+  const year=now.getFullYear();
+  const month=now.getMonth()+1;
+
+  const monthAnime=new Set();
+  const yearAnime=new Set();
+  const allAnime=new Set();
+
+  let monthEpisodes=0;
+  let yearEpisodes=0;
+  let allEpisodes=0;
+
+  records.forEach(record=>{
+    Object.values(record.episodeRecords||{}).forEach(item=>{
+      if(!item||!item.watched) return;
+
+      allEpisodes++;
+      allAnime.add(record.id);
+
+      if(!item.watchedDate) return;
+
+      const p=String(item.watchedDate).split("-");
+      if(p.length!==3) return;
+
+      const y=Number(p[0]);
+      const m=Number(p[1]);
+
+      if(y===year){
+        yearEpisodes++;
+        yearAnime.add(record.id);
+      }
+
+      if(y===year&&m===month){
+        monthEpisodes++;
+        monthAnime.add(record.id);
+      }
+    });
+  });
+
+  return {
+    monthAnime:monthAnime.size,
+    monthEpisodes,
+    yearAnime:yearAnime.size,
+    yearEpisodes,
+    allAnime:allAnime.size,
+    allEpisodes
+  };
+}
+
+function openViewingStats(){
+  updateViewingStats();
+  document.getElementById("viewingStatsModal").classList.add("show");
+}
+
+function closeViewingStats(){
+  document.getElementById("viewingStatsModal").classList.remove("show");
+}
+
+function updateViewingStats(){
+  const p=getViewingPeriodStats();
+  const stats=getStats();
+
+  document.getElementById("monthEpisodeCount").textContent=`${p.monthEpisodes}話`;
+  document.getElementById("monthAnimeCount").textContent=`${p.monthAnime}作品を視聴`;
+
+  document.getElementById("yearEpisodeCount").textContent=`${p.yearEpisodes}話`;
+  document.getElementById("yearAnimeCount").textContent=`${p.yearAnime}作品を視聴`;
+
+  document.getElementById("allEpisodeCount").textContent=`${p.allEpisodes}話`;
+  document.getElementById("allAnimeCount").textContent=`${p.allAnime}作品を視聴`;
+
+  document.getElementById("statsCompletedAnime").textContent=`${stats.completed}作品`;
+  document.getElementById("statsWatchingAnime").textContent=`${stats.watching}作品`;
+  document.getElementById("statsNotes").textContent=`${stats.notes}件`;
+}
+
+/* PROFILE ANALYSIS */
+function updateProfileTrends(){
+  const stats=getStats();
+  const watchedAnime=records.filter(r=>getWatchedCount(r)>0);
+  const completedAnime=records.filter(isCompleted);
+
+  const completionRate=watchedAnime.length
+    ? Math.round(completedAnime.length/watchedAnime.length*100)
+    : 0;
+
+  const averageEpisodes=watchedAnime.length
+    ? Math.round(stats.watchedEpisodes/watchedAnime.length)
+    : 0;
+
+  const noteRate=stats.watchedEpisodes
+    ? Math.round(stats.notes/stats.watchedEpisodes*100)
+    : 0;
+
+  document.getElementById("completionRate").textContent=`${completionRate}%`;
+  document.getElementById("averageEpisodes").textContent=averageEpisodes;
+  document.getElementById("noteRate").textContent=`${noteRate}%`;
+  document.getElementById("activeAnimeCount").textContent=watchedAnime.length;
+
+  const latestCompleted=[...completedAnime]
+    .sort((a,b)=>String(b.completedDate||"").localeCompare(String(a.completedDate||"")))[0];
+
+  if(latestCompleted){
+    document.getElementById("latestCompletedAnime").textContent=latestCompleted.title;
+    document.getElementById("latestCompletedAnimeSub").textContent=
+      latestCompleted.completedDate
+      ? `${formatDate(latestCompleted.completedDate)} に完走`
+      : "視聴完了";
+  }else{
+    document.getElementById("latestCompletedAnime").textContent="まだ完走作品がありません";
+    document.getElementById("latestCompletedAnimeSub").textContent="最終話まで記録するとここに残ります。";
+  }
+
+  let level=1;
+  if(stats.watchedEpisodes>=10) level=2;
+  if(stats.watchedEpisodes>=30) level=3;
+  if(stats.watchedEpisodes>=60) level=4;
+  if(stats.watchedEpisodes>=100) level=5;
+  if(stats.watchedEpisodes>=200) level=6;
+  if(stats.watchedEpisodes>=500) level=7;
+
+  document.getElementById("analysisLevel").textContent=`ANALYSIS ${level}`;
+
+  const progress=Math.min(100,stats.watchedEpisodes);
+  document.getElementById("analysisProgressBar").style.width=`${progress}%`;
+  document.getElementById("analysisProgressText").textContent=
+    stats.watchedEpisodes>=100
+    ? `${stats.watchedEpisodes}話・分析充実`
+    : `${stats.watchedEpisodes} / 100話`;
+
+  let symbol="✦";
+  let title="KIOKUを作成中";
+  let description="アニメを記録すると、あなたの視聴スタイルが見えてきます。";
+
+  if(stats.watchedEpisodes>=3){
+    if(completionRate>=80&&completedAnime.length>=2){
+      symbol="✓";
+      title="完走コレクター";
+      description="観始めた作品を最後まで見届けることが多いタイプです。";
+    }else if(noteRate>=50&&stats.notes>=3){
+      symbol="✎";
+      title="記憶を残す人";
+      description="観るだけでなく、そのとき感じたことまで残すタイプです。";
+    }else if(stats.watching>=3){
+      symbol="◇";
+      title="同時進行ウォッチャー";
+      description="複数の作品世界を行き来しながら楽しむタイプです。";
+    }else if(averageEpisodes>=20){
+      symbol="∞";
+      title="じっくり没入型";
+      description="ひとつの作品世界に長く浸る傾向があります。";
+    }else{
+      title="探索型ウォッチャー";
+      description="いろいろな作品に触れながら、自分の好きな世界を探しているタイプです。";
+    }
+  }
+
+  document.getElementById("personalitySymbol").textContent=symbol;
+  document.getElementById("personalityTitle").textContent=title;
+  document.getElementById("personalityText").textContent=description;
+}
+
+/* LIBRARY */
+function createLibraryCard(record){
+  const watched=getWatchedCount(record);
+  const total=Number(record.totalEpisodes)||0;
+  const percent=getProgress(record);
+
+  const card=document.createElement("div");
+  card.className="library-card glass";
+
+  card.innerHTML=`
+    ${record.image
+      ? `<img class="library-poster" src="${escapeHTML(record.image)}">`
+      : `<div class="library-poster"></div>`
+    }
+
+    <div class="library-info">
+      <div class="library-title">${escapeHTML(record.title)}</div>
+
+      <div class="library-meta">
+        ${isCompleted(record)
+          ? `<span class="complete-badge">COMPLETE</span><span class="complete-label">✓ 視聴完了</span>`
+          : total ? `${watched} / ${total}話` : `${watched}話 視聴`
+        }
+        ${record.lastWatchedDate ? ` ・ ${formatDate(record.lastWatchedDate)}` : ""}
+      </div>
+
+      ${total ? `
+        <div class="progress">
+          <div class="progress-bar" style="width:${percent}%"></div>
+        </div>
+        <div class="library-percent">${percent}%</div>
+      `:""}
+    </div>
+
+    <div class="arrow">›</div>
+  `;
+
+  card.onclick=()=>openDetail(record.id);
+  return card;
+}
+
+function displayLibrary(){
+  const target=document.getElementById("library");
+  target.innerHTML="";
+
+  let filtered=[...records];
+
+  if(libraryFilter==="watching") filtered=filtered.filter(isWatching);
+  if(libraryFilter==="completed") filtered=filtered.filter(isCompleted);
+  if(libraryFilter==="unwatched") filtered=filtered.filter(r=>getWatchedCount(r)===0);
+
+  if(!filtered.length){
+    target.innerHTML=`<div class="empty">${
+      records.length
+      ? "この条件の作品はありません。"
+      : "まだアニメがありません。<br>発見タブから作品を追加してみましょう。"
+    }</div>`;
+    return;
+  }
+
+  filtered.forEach(record=>target.appendChild(createLibraryCard(record)));
+}
+
+function displayRecent(){
+  const target=document.getElementById("recentLibrary");
+  target.innerHTML="";
+
+  if(!records.length){
+    target.innerHTML=`<div class="empty">まだKIOKUがありません。<br>「発見」から最初のアニメを追加してみましょう。</div>`;
+    return;
+  }
+
+  const sorted=[...records].sort((a,b)=>{
+    const ad=a.lastWatchedDate||a.startDate||"";
+    const bd=b.lastWatchedDate||b.startDate||"";
+    if(ad!==bd) return String(bd).localeCompare(String(ad));
+    return Number(b.timestamp||0)-Number(a.timestamp||0);
+  }).slice(0,3);
+
+  sorted.forEach(record=>target.appendChild(createLibraryCard(record)));
+}
+
+function setLibraryFilter(filter){
+  libraryFilter=filter;
+
+  document.querySelectorAll(".filter").forEach(button=>{
+    button.classList.toggle("active",button.dataset.filter===filter);
+  });
+
+  displayLibrary();
+}
+
+/* SEARCH */
+document.getElementById("searchInput").addEventListener("keydown",event=>{
+  if(event.key==="Enter") searchAnime();
+});
+
+async function searchAnime(){
+  const keyword=document.getElementById("searchInput").value.trim();
+
+  if(!keyword){
+    alert("作品名を入力してください。");
+    return;
+  }
+
+  const target=document.getElementById("searchResults");
+  target.innerHTML=`<div class="empty">検索中…</div>`;
+
+  try{
+    const response=await fetch(
+      "https://api.tenrai.org/v1/anime?q="+encodeURIComponent(keyword)
+    );
+
+    if(!response.ok) throw new Error(response.status);
+
+    const json=await response.json();
+    const list=Array.isArray(json.data)?json.data:[];
+
+    target.innerHTML="";
+
+    if(!list.length){
+      target.innerHTML=`<div class="empty">作品が見つかりませんでした。</div>`;
+      return;
+    }
+
+    list.slice(0,8).forEach(anime=>{
+      const apiId=anime.mal_id??anime.id??null;
+      const title=anime.title_japanese||anime.title||anime.title_english||"タイトル不明";
+      const image=anime.images?.jpg?.large_image_url||anime.images?.jpg?.image_url||anime.image_url||"";
+      const total=Number(anime.episodes)||0;
+
+      const card=document.createElement("div");
+      card.className="search-card glass";
+
+      card.innerHTML=`
+        ${image?`<img class="poster" src="${escapeHTML(image)}">`:`<div class="poster"></div>`}
+
+        <div class="search-info">
+          <div class="search-title">${escapeHTML(title)}</div>
+          <div class="search-meta">
+            ${escapeHTML(anime.type||"Anime")}
+            ${total?` ・ 全${total}話`:""}
+            ${anime.score?` ・ ★ ${anime.score}`:""}
+          </div>
+          <button class="small-button">＋ KIOKU</button>
+        </div>
+      `;
+
+      card.querySelector(".small-button").onclick=()=>{
+        addAnime({
+          apiId,
+          title,
+          image,
+          totalEpisodes:total,
+          animeType:anime.type||"Anime"
+        });
+      };
+
+      target.appendChild(card);
+    });
+
+  }catch(error){
+    console.error(error);
+    target.innerHTML=`<div class="empty">検索に失敗しました。<br>少し時間をおいて、もう一度試してください。</div>`;
+  }
+}
+
+function addAnime(anime){
+  const exists=records.find(record=>
+    record.apiId&&anime.apiId&&String(record.apiId)===String(anime.apiId)
+  );
+
+  if(exists){
+    alert("この作品はすでにKIOKUにあります。");
+    openDetail(exists.id);
+    return;
+  }
+
+  const record={
+    id:Date.now()+Math.floor(Math.random()*1000),
+    type:"Anime",
+    apiId:anime.apiId,
+    title:anime.title,
+    image:anime.image,
+    totalEpisodes:anime.totalEpisodes,
+    animeType:anime.animeType,
+    episodeRecords:{},
+    startDate:"",
+    lastWatchedDate:"",
+    completedDate:"",
+    timestamp:Date.now()
+  };
+
+  records.unshift(record);
+  saveRecords();
+  refreshApp();
+
+  alert("KIOKUに追加しました。");
+}
+
+/* DETAIL */
+async function openDetail(id){
+  const record=records.find(r=>r.id===id);
+  if(!record) return;
+
+  currentAnimeId=id;
+  castExpanded=false;
+  updateCastToggleButton();
+
+  document.querySelectorAll(".app-page").forEach(page=>page.classList.remove("active"));
+  document.getElementById("detailPage").style.display="block";
+  document.getElementById("bottomNavigation").style.display="none";
+
+  renderDetail(record);
+
+  document.getElementById("episodeList").innerHTML=`<div class="empty">読み込み中…</div>`;
+  document.getElementById("castList").innerHTML=`<div class="empty">読み込み中…</div>`;
+  document.getElementById("themeList").innerHTML=`<div class="empty">読み込み中…</div>`;
+
+  if(record.apiId){
+    await Promise.all([
+      loadEpisodes(record),
+      loadCast(record),
+      loadThemes(record)
+    ]);
+  }else{
+    document.getElementById("episodeList").innerHTML=`<div class="empty">エピソード情報を取得できません。</div>`;
+    document.getElementById("castList").innerHTML=`<div class="empty">キャスト情報を取得できません。</div>`;
+    document.getElementById("themeList").innerHTML=`<div class="empty">主題歌情報を取得できません。</div>`;
+  }
+
+  window.scrollTo(0,0);
+}
+
+function closeDetail(){
+  document.getElementById("detailPage").style.display="none";
+  document.getElementById("bottomNavigation").style.display="block";
+  currentAnimeId=null;
+  switchTab(activeTab);
+}
+
+function renderDetail(record){
+  const watched=getWatchedCount(record);
+  const total=Number(record.totalEpisodes)||0;
+  const percent=getProgress(record);
+
+  document.getElementById("detailTitle").textContent=record.title;
+
+  const poster=document.getElementById("detailPoster");
+
+  if(record.image){
+    poster.src=record.image;
+    poster.style.display="block";
+  }else{
+    poster.style.display="none";
+  }
+
+  document.getElementById("detailMeta").textContent=
+    total ? `${record.animeType||"Anime"} ・ 全${total}話` : record.animeType||"Anime";
+
+  document.getElementById("detailPercent").textContent=
+    total ? `${percent}%` : `${watched}話`;
+
+  document.getElementById("detailEpisodeCount").textContent=
+    isCompleted(record)
+    ? `✓ COMPLETE ・ ${watched} / ${total}話`
+    : total ? `${watched} / ${total}話` : `${watched}話 視聴`;
+
+  document.getElementById("detailProgressBar").style.width=`${percent}%`;
+
+  document.getElementById("startDate").textContent=formatDate(record.startDate);
+  document.getElementById("lastDate").textContent=formatDate(record.lastWatchedDate);
+  document.getElementById("completeDate").textContent=formatDate(record.completedDate);
+
+  const allButton=document.getElementById("markAllWatchedButton");
+
+  if(isCompleted(record)){
+    allButton.textContent="✓ 全話視聴済み";
+    allButton.classList.add("done");
+  }else{
+    allButton.textContent="✓ 全話視聴";
+    allButton.classList.remove("done");
+  }
+}
+
+/* ALL WATCHED */
+function markAllWatched(){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  if(isCompleted(record)){
+    alert("この作品はすでに全話視聴済みです。");
+    return;
+  }
+
+  const total=Number(record.totalEpisodes)||record._episodes?.length||0;
+
+  if(!total){
+    alert("話数を取得できないため、全話視聴にできませんでした。");
+    return;
+  }
+
+  if(!confirm(`「${record.title}」全${total}話を視聴済みにしますか？`)){
+    return;
+  }
+
+  if(!record.episodeRecords) record.episodeRecords={};
+
+  const numbers=record._episodes?.length
+    ? record._episodes.map((ep,index)=>Number(ep.mal_id??ep.number??index+1))
+    : Array.from({length:total},(_,i)=>i+1);
+
+  numbers.forEach(number=>{
+    const old=record.episodeRecords[number]||{};
+
+    record.episodeRecords[number]={
+      ...old,
+      watched:true,
+      watchedDate:old.watchedDate||today(),
+      note:old.note||""
+    };
+  });
+
+  recalculateDates(record);
+  saveRecords();
+  renderDetail(record);
+
+  if(record._episodes) renderEpisodes(record);
+
+  refreshApp();
+
+  showCompleteModal(record);
+}
+
+/* EPISODES */
+async function loadEpisodes(record){
+  try{
+    const response=await fetch(
+      "https://api.tenrai.org/v1/anime/"+encodeURIComponent(record.apiId)+"/episodes"
+    );
+
+    if(!response.ok) throw new Error(response.status);
+
+    const json=await response.json();
+    const episodes=Array.isArray(json.data)?json.data:[];
+
+    record._episodes=episodes;
+
+    if(!record.totalEpisodes&&episodes.length){
+      record.totalEpisodes=episodes.length;
+      recalculateDates(record);
+      saveRecords();
+    }
+
+    renderEpisodes(record);
+    renderDetail(record);
+    refreshApp();
+
+  }catch(error){
+    console.error(error);
+    document.getElementById("episodeList").innerHTML=
+      `<div class="empty">エピソード情報を取得できませんでした。</div>`;
+  }
+}
+
+function renderEpisodes(record){
+  const target=document.getElementById("episodeList");
+  const episodes=record._episodes||[];
+
+  target.innerHTML="";
+
+  if(!episodes.length){
+    target.innerHTML=`<div class="empty">エピソード情報がありません。</div>`;
+    return;
+  }
+
+  episodes.forEach((episode,index)=>{
+    const number=Number(episode.mal_id??episode.number??index+1);
+    const title=episode.title_japanese||episode.title||"";
+    const saved=record.episodeRecords?.[number]||{};
+    const watched=!!saved.watched;
+
+    const row=document.createElement("div");
+    row.className="episode-row";
+
+    row.innerHTML=`
+      <div class="episode-main">
+        <div class="episode-check">${watched?"✓":"○"}</div>
+        <div>第${number}話${title?`　${escapeHTML(title)}`:""}</div>
+      </div>
+
+      ${saved.watchedDate
+        ? `<div class="episode-date">${formatDate(saved.watchedDate)} に視聴</div>`
+        : ""
+      }
+
+      ${String(saved.note||"").trim()
+        ? `<div class="episode-note">✎ 感想あり</div>`
+        : ""
+      }
+    `;
+
+    row.onclick=()=>openEpisodeModal(number,title);
+    target.appendChild(row);
+  });
+}
+
+/* EPISODE MODAL */
+function openEpisodeModal(number,title){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  currentEpisodeNumber=number;
+  const saved=record.episodeRecords?.[number]||{};
+
+  document.getElementById("episodeModalTitle").textContent=
+    `第${number}話${title?"　"+title:""}`;
+
+  document.getElementById("episodeNote").value=saved.note||"";
+  document.getElementById("episodeWatchDate").value=saved.watchedDate||"";
+
+  updateEpisodeModal();
+  document.getElementById("episodeModal").classList.add("show");
+}
+
+function updateEpisodeModal(){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  const saved=record.episodeRecords?.[currentEpisodeNumber]||{};
+
+  document.getElementById("watchedToggle").textContent=
+    saved.watched ? "✓ 視聴済み" : "○ 視聴済みにする";
+
+  document.getElementById("episodeModalDate").textContent=
+    saved.watchedDate
+    ? `視聴日 ${formatDate(saved.watchedDate)}`
+    : "まだ視聴していません";
+}
+
+function toggleEpisodeWatched(){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  if(!record.episodeRecords) record.episodeRecords={};
+
+  if(!record.episodeRecords[currentEpisodeNumber]){
+    record.episodeRecords[currentEpisodeNumber]={
+      watched:false,
+      watchedDate:"",
+      note:""
+    };
+  }
+
+  const item=record.episodeRecords[currentEpisodeNumber];
+  const wasCompleted=isCompleted(record);
+
+  if(item.watched){
+    item.watched=false;
+    item.watchedDate="";
+  }else{
+    item.watched=true;
+    if(!item.watchedDate) item.watchedDate=today();
+  }
+
+  recalculateDates(record);
+  saveRecords();
+  document.getElementById("episodeWatchDate").value=item.watchedDate||"";
+  updateEpisodeModal();
+  renderDetail(record);
+  renderEpisodes(record);
+  refreshApp();
+
+  if(!wasCompleted&&isCompleted(record)){
+    showCompleteModal(record);
+  }
+}
+
+function saveEpisodeNote(){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  if(!record.episodeRecords) record.episodeRecords={};
+
+  if(!record.episodeRecords[currentEpisodeNumber]){
+    record.episodeRecords[currentEpisodeNumber]={
+      watched:false,
+      watchedDate:"",
+      note:""
+    };
+  }
+
+  const item=record.episodeRecords[currentEpisodeNumber];
+  const wasCompleted=isCompleted(record);
+  const chosenDate=document.getElementById("episodeWatchDate").value;
+
+  item.note=document.getElementById("episodeNote").value.trim();
+
+  if(chosenDate){
+    item.watched=true;
+    item.watchedDate=chosenDate;
+  }else if(item.watched&&!item.watchedDate){
+    item.watchedDate=today();
+  }
+
+  recalculateDates(record);
+  saveRecords();
+  renderDetail(record);
+  renderEpisodes(record);
+  refreshApp();
+  closeEpisodeModal();
+
+  if(!wasCompleted&&isCompleted(record)){
+    showCompleteModal(record);
+  }
+}
+
+function closeEpisodeModal(){
+  document.getElementById("episodeModal").classList.remove("show");
+  currentEpisodeNumber=null;
+}
+
+/* DATES */
+function recalculateDates(record){
+  const watchedItems=Object.values(record.episodeRecords||{})
+    .filter(item=>item&&item.watched);
+
+  if(!watchedItems.length){
+    record.startDate="";
+    record.lastWatchedDate="";
+    record.completedDate="";
+    return;
+  }
+
+  const dates=watchedItems
+    .map(item=>item.watchedDate)
+    .filter(Boolean)
+    .sort();
+
+  if(dates.length){
+    record.startDate=dates[0];
+    record.lastWatchedDate=dates[dates.length-1];
+  }else{
+    const fallback=
+      record.startDate||
+      (record.timestamp?dateFromTimestamp(record.timestamp):today());
+
+    record.startDate=fallback;
+    record.lastWatchedDate=fallback;
+  }
+
+  if(isCompleted(record)){
+    if(!record.completedDate){
+      record.completedDate=record.lastWatchedDate||today();
+    }
+  }else{
+    record.completedDate="";
+  }
+}
+
+/* THEMES */
+async function loadThemes(record){
+  const target=document.getElementById("themeList");
+
+  try{
+    const response=await fetch(
+      "https://api.tenrai.org/v1/anime/"+encodeURIComponent(record.apiId)+"/themes"
+    );
+
+    if(!response.ok) throw new Error(response.status);
+
+    const json=await response.json();
+    const data=json.data||json||{};
+
+    const openings=
+      Array.isArray(data.openings) ? data.openings :
+      Array.isArray(data.opening_themes) ? data.opening_themes :
+      [];
+
+    const endings=
+      Array.isArray(data.endings) ? data.endings :
+      Array.isArray(data.ending_themes) ? data.ending_themes :
+      [];
+
+    target.innerHTML="";
+
+    if(!openings.length&&!endings.length){
+      target.innerHTML=`<div class="empty">主題歌情報がありません。</div>`;
+      return;
+    }
+
+    if(openings.length){
+      const group=document.createElement("div");
+      group.className="theme-group";
+
+      group.innerHTML=`
+        <div class="theme-type">OPENING / OP</div>
+        ${openings.map(song=>`
+          <div class="theme-song">${escapeHTML(
+            typeof song==="string"
+            ? song
+            : song.title||song.name||JSON.stringify(song)
+          )}</div>
+        `).join("")}
+      `;
+
+      target.appendChild(group);
+    }
+
+    if(endings.length){
+      const group=document.createElement("div");
+      group.className="theme-group";
+
+      group.innerHTML=`
+        <div class="theme-type">ENDING / ED</div>
+        ${endings.map(song=>`
+          <div class="theme-song">${escapeHTML(
+            typeof song==="string"
+            ? song
+            : song.title||song.name||JSON.stringify(song)
+          )}</div>
+        `).join("")}
+      `;
+
+      target.appendChild(group);
+    }
+
+  }catch(error){
+    console.error(error);
+
+    target.innerHTML=`
+      <div class="empty">
+        主題歌情報を取得できませんでした。
+      </div>
+    `;
+  }
+}
+
+/* JAPANESE CV */
+function getJapaneseActorName(voice){
+  if(!voice) return "情報なし";
+
+  const person=voice.person||{};
+
+  const native=
+    person.name_japanese||
+    person.name_native||
+    person.native_name||
+    person.japanese_name||
+    voice.name_japanese||
+    voice.name_native||
+    voice.native_name;
+
+  if(native) return native;
+
+  const original=person.name||voice.name||"";
+
+  return japaneseVoiceActorNames[original]||original||"情報なし";
+}
+
+function updateCastToggleButton(total){
+  const button=document.getElementById("castToggleButton");
+  if(!button) return;
+  if(castExpanded){
+    button.textContent="5人に戻す ↑";
+  }else{
+    button.textContent=total&&total>5 ? `主要5人 / ${total}人 ↓` : "主要5人";
+  }
+}
+
+function toggleCast(){
+  castExpanded=!castExpanded;
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(record&&Array.isArray(record._characters)){
+    renderCast(record);
+  }
+}
+
+function renderCast(record){
+  const target=document.getElementById("castList");
+  const characters=record._characters||[];
+  target.innerHTML="";
+
+  if(!characters.length){
+    target.innerHTML=`<div class="empty">キャスト情報がありません。</div>`;
+    updateCastToggleButton(0);
+    return;
+  }
+
+  const visible=castExpanded ? characters.slice(0,30) : characters.slice(0,5);
+  updateCastToggleButton(Math.min(characters.length,30));
+
+  visible.forEach(item=>{
+    const character=item.character||{};
+    const voices=Array.isArray(item.voice_actors)?item.voice_actors:[];
+    const japanese=voices.find(voice=>
+      String(voice.language||"").toLowerCase().includes("japanese")
+    );
+    const actor=getJapaneseActorName(japanese);
+    const image=character.images?.jpg?.image_url||character.image_url||"";
+    const characterName=
+      character.name_japanese||
+      character.name_native||
+      character.native_name||
+      character.name||
+      "キャラクター";
+
+    const row=document.createElement("div");
+    row.className="cast-row";
+    row.innerHTML=`
+      ${image
+        ? `<img class="cast-image" src="${escapeHTML(image)}">`
+        : `<div class="cast-image"></div>`
+      }
+      <div>
+        <div class="cast-name">${escapeHTML(characterName)}</div>
+        <div class="cast-cv">CV：${escapeHTML(actor)}</div>
+      </div>
+    `;
+    target.appendChild(row);
+  });
+}
+
+/* CAST */
+async function loadCast(record){
+  const target=document.getElementById("castList");
+
+  try{
+    const response=await fetch(
+      "https://api.tenrai.org/v1/anime/"+encodeURIComponent(record.apiId)+"/characters"
+    );
+
+    if(!response.ok) throw new Error(response.status);
+
+    const json=await response.json();
+    const characters=Array.isArray(json.data)?json.data:[];
+    record._characters=characters;
+    renderCast(record);
+
+  }catch(error){
+    console.error(error);
+    target.innerHTML=`
+      <div class="empty">
+        キャスト情報を取得できませんでした。
+      </div>
+    `;
+    updateCastToggleButton(0);
+  }
+}
+
+/* DELETE */
+function deleteCurrentAnime(){
+  const record=records.find(r=>r.id===currentAnimeId);
+  if(!record) return;
+
+  if(!confirm(`「${record.title}」をKIOKUから削除しますか？`)) return;
+
+  records=records.filter(r=>r.id!==currentAnimeId);
+  saveRecords();
+
+  document.getElementById("detailPage").style.display="none";
+  currentAnimeId=null;
+
+  switchTab("library");
+}
+
+/* QUIZ */
+const quizQuestions=[
+  {
+    key:"mood",
+    question:"今、どんな気分？",
+    options:["🔥 熱くなりたい","😌 癒されたい","😭 泣きたい","😱 ハラハラしたい","😂 笑いたい"]
+  },
+  {
+    key:"genre",
+    question:"どんな世界を観たい？",
+    options:["⚔️ ファンタジー","🏫 日常・青春","❤️ 恋愛","🧠 ミステリー","🚀 SF","どれでも"]
+  },
+  {
+    key:"length",
+    question:"どれくらいの長さがいい？",
+    options:["☕ サクッと観たい","🌙 1クールくらい","📺 長く楽しみたい","どれでも"]
+  },
+  {
+    key:"priority",
+    question:"何を一番重視する？",
+    options:["📖 ストーリー","👤 キャラクター","🎨 映像","🎵 音楽・雰囲気","⚡ テンポ"]
+  }
+];
+
+function openQuiz(){
+  quizStep=0;
+  quizAnswers={mood:"",genre:"",length:"",priority:"",voiceActor:"",voicePriority:""};
+  document.getElementById("quizModal").classList.add("show");
+  renderQuiz();
+}
+
+function closeQuiz(){
+  document.getElementById("quizModal").classList.remove("show");
+}
+
+function renderQuiz(){
+  const target=document.getElementById("quizContent");
+  const progress=document.getElementById("quizProgress");
+
+  if(quizStep<4){
+    const question=quizQuestions[quizStep];
+
+    progress.textContent=`${quizStep+1} / 6`;
+
+    target.innerHTML=`
+      <div class="quiz-question">${question.question}</div>
+      <div class="quiz-options">
+        ${question.options.map(option=>`
+          <button class="quiz-option" data-value="${escapeHTML(option)}">
+            ${escapeHTML(option)}
+          </button>
+        `).join("")}
+      </div>
+    `;
+
+    target.querySelectorAll(".quiz-option").forEach(button=>{
+      button.onclick=()=>{
+        quizAnswers[question.key]=button.dataset.value;
+        quizStep++;
+        renderQuiz();
+      };
+    });
+
+    return;
+  }
+
+  if(quizStep===4){
+    progress.textContent="5 / 6";
+
+    target.innerHTML=`
+      <div class="quiz-question">好きな声優さんはいる？</div>
+
+      <div class="discover-text">
+        出演してほしい声優さんがいれば入力してください。
+      </div>
+
+      <div style="margin-top:18px">
+        <input id="voiceActorInput" class="search-input" placeholder="例：花江夏樹">
+      </div>
+
+      <div class="quiz-options">
+        <button id="voiceNext" class="quiz-option">この声優さんを入れたい</button>
+        <button id="voiceSkip" class="quiz-option">特にいない</button>
+      </div>
+    `;
+
+    document.getElementById("voiceNext").onclick=()=>{
+      const value=document.getElementById("voiceActorInput").value.trim();
+
+      if(!value){
+        alert("声優名を入力してください。");
+        return;
+      }
+
+      quizAnswers.voiceActor=value;
+      quizStep++;
+      renderQuiz();
+    };
+
+    document.getElementById("voiceSkip").onclick=()=>{
+      quizAnswers.voiceActor="";
+      quizAnswers.voicePriority="特にこだわらない";
+      showQuizSummary();
+    };
+
+    return;
+  }
+
+  if(quizStep===5){
+    progress.textContent="6 / 6";
+
+    target.innerHTML=`
+      <div class="quiz-question">
+        ${escapeHTML(quizAnswers.voiceActor)}さんの出演をどのくらい重視する？
+      </div>
+
+      <div class="quiz-options">
+        <button class="quiz-option" data-priority="必須">◎ 絶対に出演していてほしい</button>
+        <button class="quiz-option" data-priority="優先">○ できれば出演していてほしい</button>
+        <button class="quiz-option" data-priority="なし">△ 特にこだわらない</button>
+      </div>
+    `;
+
+    target.querySelectorAll("[data-priority]").forEach(button=>{
+      button.onclick=()=>{
+        quizAnswers.voicePriority=button.dataset.priority;
+        showQuizSummary();
+      };
+    });
+  }
+}
+
+function showQuizSummary(){
+  document.getElementById("quizProgress").textContent="診断完了";
+
+  document.getElementById("quizContent").innerHTML=`
+    <div class="quiz-question">あなたの好み</div>
+
+    <div class="discover-hero glass" style="margin-top:20px">
+      <div class="discover-text">
+        ${escapeHTML(quizAnswers.mood)}<br><br>
+        ${escapeHTML(quizAnswers.genre)}<br><br>
+        ${escapeHTML(quizAnswers.length)}<br><br>
+        ${escapeHTML(quizAnswers.priority)}
+
+        ${quizAnswers.voiceActor?`
+          <br><br>
+          🎙 ${escapeHTML(quizAnswers.voiceActor)}
+          <br>
+          声優優先度：${escapeHTML(quizAnswers.voicePriority)}
+        `:""}
+      </div>
+
+      <button class="primary-button" onclick="recommendationComingSoon()">
+        おすすめを見る
+      </button>
+    </div>
+  `;
+}
+
+function recommendationComingSoon(){
+  alert("次は、この診断結果から実際のアニメをおすすめする機能を接続します。");
+}
+
+/* SETTINGS */
+function openSettings(){
+  updatePremiumButton();
+  document.getElementById("settingsModal").classList.add("show");
+}
+
+function closeSettings(){
+  document.getElementById("settingsModal").classList.remove("show");
+}
+
+function togglePremium(){
+  premium=!premium;
+  localStorage.setItem("premiumTest",premium);
+  updatePremiumButton();
+}
+
+function updatePremiumButton(){
+  document.getElementById("premiumButton").textContent=
+    premium ? "プレミアム：ON" : "プレミアム：OFF";
+}
+
+function selectPhoto(){
+  if(!premium){
+    alert("この機能はプレミアム限定です。");
+    return;
+  }
+
+  document.getElementById("photoInput").click();
+}
+
+function setPhoto(event){
+  const file=event.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+
+  reader.onload=event=>{
+    const image=event.target.result;
+
+    setBackgroundImage(image);
+
+    try{
+      localStorage.setItem("customBackground",image);
+    }catch{
+      alert("写真のサイズが大きいため保存できませんでした。");
+    }
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function setBackgroundImage(image){
+  const bg=document.getElementById("background");
+  bg.style.backgroundImage=`url("${image}")`;
+  bg.style.backgroundSize="cover";
+  bg.style.backgroundPosition="center";
+}
+
+function resetBackground(){
+  localStorage.removeItem("customBackground");
+
+  const bg=document.getElementById("background");
+
+  bg.style.background=`
+    radial-gradient(circle at 75% 5%,rgba(100,80,180,.20),transparent 30%),
+    radial-gradient(circle at 10% 80%,rgba(40,80,150,.18),transparent 35%),
+    linear-gradient(160deg,#05060c,#0b1020 50%,#161126 100%)
+  `;
+
+  bg.style.backgroundSize="cover";
+}
+
+function changeDarkness(value){
+  document.getElementById("backgroundOverlay").style.background=
+    `rgba(4,6,15,${value/100})`;
+
+  localStorage.setItem("backgroundDarkness",value);
+}
+
+/* REFRESH */
+function refreshApp(){
+  updateDashboard();
+  displayLibrary();
+  displayRecent();
+  updateProfileTrends();
+  updateKiokuLevel();
+  updateNextGoal();
+  updateMemoryRecall();
+}
+
+/* LOAD APP */
+function loadApp(){
+  const photo=localStorage.getItem("customBackground");
+
+  if(photo){
+    setBackgroundImage(photo);
+  }
+
+  const darkness=localStorage.getItem("backgroundDarkness");
+
+  if(darkness){
+    document.getElementById("darknessRange").value=darkness;
+    changeDarkness(darkness);
+  }
+
+  updatePremiumButton();
+  refreshApp();
+}
+
+loadApp();
+</script>
+
+</body>
+</html>
